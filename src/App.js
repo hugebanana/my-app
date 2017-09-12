@@ -56,7 +56,7 @@ class App extends Component {
                             </Menu>
                         </Sider>
                         <Router history={hashHistory}>
-                            <Route path="chess/:addTimes" component={Main}/>
+                            <Route path="chess" component={Main}/>
                             <Route path="title" component={Article}/>
                         </Router>
                     </Layout>

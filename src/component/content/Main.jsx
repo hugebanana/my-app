@@ -1,5 +1,5 @@
 import React from 'react';
-import {  notification, Icon } from 'antd';
+import {notification, Icon} from 'antd';
 
 class Main extends React.Component {
 
@@ -8,17 +8,16 @@ class Main extends React.Component {
         this.count = 0;
         this.ctx = {};
         this.desk = [];
-        this.state = {time: 0,canvas:{}};
+        this.state = {time: 0, canvas: {}};
         //赢法数组
         this.win = [];
         this.playerWinCount = [];
         this.comWinCount = [];
-
-
+        this.turn = true;
     }
 
     changeWin = (x, y, player) => {
-        console.log(x,y);
+        console.log(x, y);
         if (player === 'player') {
             for (let i = 0; i < this.win[x - 1][y - 1].length; i++) {
                 if (this.win[x - 1][y - 1][i]) {
@@ -26,7 +25,10 @@ class Main extends React.Component {
                     // console.log('times',i);
                     // console.log(this.playerWinCount[i]);
                     if (this.playerWinCount[i] === 5) {
-                        this.openNotification();
+                        this.openNotification({
+                            message: 'winner winner ! chiken dinner!',
+                            icon: <Icon type="smile-circle" style={{color: '#108ee9'}}/>,
+                        });
                         // alert('winner winner ! chiken dinner!');
                         this.state.time++;
 
@@ -36,25 +38,44 @@ class Main extends React.Component {
                                 this.desk[i][j] = 1;
                             }
                         }
-
                         return;
                     }
                     this.comWinCount[i] = 6;
                 }
             }
+        } else {
+            for (let i = 0; i < this.win[x - 1][y - 1].length; i++) {
+                if (this.win[x - 1][y - 1][i]) {
+                    this.comWinCount[i]++;
+                    // console.log('times',i);
+                    if (this.comWinCount[i] === 5) {
+                        this.openNotification({
+                            message: 'loser loser ! chiken dinner!',
+                            icon: <Icon type="smile-circle" style={{color: '#108ee9'}}/>,
+                        });
+                        this.state.time++;
+
+                        for (let i = 0; i < 19; i++) {
+                            this.desk[i] = new Array();
+                            for (let j = 0; j < 19; j++) {
+                                this.desk[i][j] = 1;
+                            }
+                        }
+                        return;
+                    }
+                    this.playerWinCount[i] = 6;
+                }
+            }
         }
     }
 
-    componentWillUpdate(nextProps, nextState){
+    componentWillUpdate(nextProps, nextState) {
         console.log('renew')
         this.componentDidMount();
     }
 
-    openNotification = () => {
-        notification.open({
-            message: 'winner winner ! chiken dinner!',
-            icon: <Icon type="smile-circle" style={{ color: '#108ee9' }} />,
-        });
+    openNotification = (obj) => {
+        notification.open(obj);
     };
 
     //675 135
@@ -127,12 +148,123 @@ class Main extends React.Component {
             this.playerWinCount[i] = 0;
             this.comWinCount[i] = 0;
         }
+
+        this.putChesspiece(10, 10, 'black');
+        this.changeWin(10, 10, 'com');
     }
 
-    alphaDog(x,y){
-        for (let i = 0; i < this.win[x - 1][y - 1].length; i++) {
-
+    noob = (x, y) => {
+        if (this.desk[x][y - 1] != null && this.desk[x][y - 1] === 0) {
+            this.putChesspiece(x + 1, y, 'black');
+            this.changeWin(x + 1, y, 'com');
+            this.turn = true;
+        } else if (this.desk[x - 2][y - 1] != null && this.desk[x - 2][y - 1] === 0) {
+            this.putChesspiece(x - 1, y, 'black');
+            this.changeWin(x - 1, y, 'com');
+            this.turn = true;
+        } else if (this.desk[x - 1][y] != null && this.desk[x - 1][y] === 0) {
+            this.putChesspiece(x, y + 1, 'black');
+            this.changeWin(x, y + 1, 'com');
+            this.turn = true;
+        } else if (this.desk[x - 1][y - 2] != null && this.desk[x - 1][y - 2] === 0) {
+            this.putChesspiece(x, y - 1, 'black');
+            this.changeWin(x, y - 1, 'com');
+            this.turn = true;
         }
+    }
+
+
+    alphaDog(x, y) {
+        let index = 0;
+        let score = 0;
+        for (let i = 0; i < this.win[x - 1][y - 1].length; i++) {
+            if (this.win[x - 1][y - 1][i]) {
+                if (this.playerWinCount[i] < 5 && this.playerWinCount[i] > score) {
+                    score = this.playerWinCount[i];
+                    index = i;
+                }
+            }
+        }
+        if (score >= 3 && score < 5) {
+            //防御
+            console.log('def!!!!!!!!!')
+            for (let i = 0; i < this.win.length; i++) {
+                for (let j = 0; j < this.win[i].length; j++) {
+                    for (let k = 0; k < this.win[i][j].length; k++) {
+                        if (this.win[i][j][k] === true && k === index) {
+                            console.log('xy', i, j);
+                            if (this.desk[i][j] === 0 && Math.abs(i + 1 - x) < 2 && Math.abs(j + 1 - y) < 2) {
+                                console.log('chose', i, j);
+                                this.putChesspiece(i + 1, j + 1, 'black');
+                                this.changeWin(i + 1, j + 1, 'com');
+                                this.turn = true;
+                                return;
+                            } else {
+                                this.noob(x,y);
+                                //开关 棋神模式！！
+                                // return;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            //进攻
+
+            if (this.desk[x][y - 1] != null && this.desk[x][y - 1] === 0) {
+                this.putChesspiece(x + 1, y, 'black');
+                this.changeWin(x + 1, y, 'com');
+                this.turn = true;
+                return;
+            } else if (this.desk[x - 2][y - 1] != null && this.desk[x - 2][y - 1] === 0) {
+                this.putChesspiece(x - 1, y, 'black');
+                this.changeWin(x - 1, y, 'com');
+                this.turn = true;
+                return;
+            } else if (this.desk[x - 1][y] != null && this.desk[x - 1][y] === 0) {
+                this.putChesspiece(x, y + 1, 'black');
+                this.changeWin(x, y + 1, 'com');
+                this.turn = true;
+                return;
+            } else if (this.desk[x - 1][y - 2] != null && this.desk[x - 1][y - 2] === 0) {
+                this.putChesspiece(x, y - 1, 'black');
+                this.changeWin(x, y - 1, 'com');
+                this.turn = true;
+                return;
+            }
+
+
+            // for (let i = 0; i < this.comWinCount.length; i++) {
+            //     if (this.comWinCount[i] > score) {
+            //         score = this.comWinCount[i];
+            //         index = i;
+            //     }
+            // }
+            //
+            // for (let i = 0; i < this.win.length; i++) {
+            //     for (let j = 0; j < this.win[i].length; j++) {
+            //         for (let k = 0; k < this.win[i][j].length; k++) {
+            //             if (this.win[i][j][k] === true && k === index) {
+            //                 if (this.desk[i][j] === 0) {
+            //                     console.log('compp',i,j)
+            //                     this.putChesspiece(i + 1, j + 1, 'black');
+            //                     this.changeWin(i + 1, j + 1, 'com');
+            //                     this.turn = true;
+            //                     return;
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
+        }
+    }
+
+    mapPoint(x, y, index) {
+        if (this.desk[x][y] === 0 && this.win[x][y][index]) {
+            this.putChesspiece(x + 1, y + 1, 'black');
+            return true;
+        }
+        return false;
     }
 
     onClick = (e) => {
@@ -148,11 +280,13 @@ class Main extends React.Component {
         // console.log(e.pageX, e.pageY)
         // console.log(this.desk);
         // console.log(x, y);
-        if (this.desk[x - 1][y - 1] === 0) {
+        if (this.desk[x - 1][y - 1] === 0 && this.turn) {
             this.putChesspiece(x, y, 'white');
-
             let mark = this.changeWin(x, y, 'player');
+            this.turn = false;
+            this.alphaDog(x, y);
         }
+
     }
 
     //下棋子
