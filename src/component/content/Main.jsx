@@ -282,7 +282,7 @@ class Main extends React.Component {
         // console.log(x, y);
         if (this.desk[x - 1][y - 1] === 0 && this.turn) {
             this.putChesspiece(x, y, 'white');
-            let mark = this.changeWin(x, y, 'player');
+            this.changeWin(x, y, 'player');
             this.turn = false;
             this.alphaDog(x, y);
         }
