@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {Layout, Menu, Breadcrumb, Icon} from 'antd';
 import {Router, Route, hashHistory} from 'react-router';
-import Main from './component/content/Main';
-import Article from './component/content/Article';
+import Main from './component/chess/Main';
+import Article from './component/chess/Article';
 
 const {SubMenu} = Menu;
 const {Content, Footer, Sider} = Layout;

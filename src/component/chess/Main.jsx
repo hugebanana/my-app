@@ -1,4 +1,6 @@
 import React from 'react';
+import MyTable from './MyTable';
+import MyModal from './MyModal';
 import {notification, Icon} from 'antd';
 
 class Main extends React.Component {
@@ -16,6 +18,10 @@ class Main extends React.Component {
         this.turn = true;
     }
 
+    changeState = () => {
+        this.setState({time: 0});
+    }
+
     changeWin = (x, y, player) => {
         console.log(x, y);
         if (player === 'player') {
@@ -31,13 +37,13 @@ class Main extends React.Component {
                         });
                         // alert('winner winner ! chiken dinner!');
                         this.state.time++;
-
                         for (let i = 0; i < 19; i++) {
                             this.desk[i] = new Array();
                             for (let j = 0; j < 19; j++) {
                                 this.desk[i][j] = 1;
                             }
                         }
+                        this.refs.myModal.showModal(this.changeState);
                         return;
                     }
                     this.comWinCount[i] = 6;
@@ -54,13 +60,13 @@ class Main extends React.Component {
                             icon: <Icon type="smile-circle" style={{color: '#108ee9'}}/>,
                         });
                         this.state.time++;
-
                         for (let i = 0; i < 19; i++) {
                             this.desk[i] = new Array();
                             for (let j = 0; j < 19; j++) {
                                 this.desk[i][j] = 1;
                             }
                         }
+                        this.refs.myModal.showModal(this.changeState);
                         return;
                     }
                     this.playerWinCount[i] = 6;
@@ -72,6 +78,7 @@ class Main extends React.Component {
     componentWillUpdate(nextProps, nextState) {
         console.log('renew')
         this.componentDidMount();
+        console.log(this.desk)
     }
 
     openNotification = (obj) => {
@@ -80,6 +87,8 @@ class Main extends React.Component {
 
     //675 135
     componentDidMount() {
+        this.turn = true;
+        let comment = {name: 'pj', word: 'hello'};
         this.state.canvas = document.getElementById('myCanvas');
         // this.state.canvas = canvas;
         this.state.canvas.width = 800;
@@ -200,7 +209,7 @@ class Main extends React.Component {
                                 this.turn = true;
                                 return;
                             } else {
-                                this.noob(x,y);
+                                this.noob(x, y);
                                 //开关 棋神模式！！
                                 // return;
                             }
@@ -279,8 +288,9 @@ class Main extends React.Component {
         let y = Math.round((e.pageY - 175) / 40) + 1;
         // console.log(e.pageX, e.pageY)
         // console.log(this.desk);
-        // console.log(x, y);
+        console.log(this.desk[x - 1][y - 1] === 0 && this.turn);
         if (this.desk[x - 1][y - 1] === 0 && this.turn) {
+            console.log(x, y);
             this.putChesspiece(x, y, 'white');
             this.changeWin(x, y, 'player');
             this.turn = false;
@@ -291,7 +301,7 @@ class Main extends React.Component {
 
     //下棋子
     putChesspiece = (x, y, color) => {
-        // console.log(x, y);
+        console.log(x, y);
         // console.log(this.desk);
 
         this.desk[x - 1][y - 1] = 1;
@@ -327,19 +337,32 @@ class Main extends React.Component {
 
     render() {
         return (
-            <div style={{padding: '0 24px', minHeight: 870}}>
-                <div style={{
-                    border: 'solid black 1px',
-                    height: '800px',
-                    width: '800px',
-                    left: '400px',
-                    position: 'relative'
-                }}>
-                    <canvas id={'myCanvas'} style={{
+            <div>
+                <div style={{padding: '0 24px', minHeight: 870}}>
+                    <div style={{width: '350px', height: '800px', float: 'left',}}>
+                        Winner
+                        <MyTable/>
+                    </div>
+
+                    <div style={{width: '350px', height: '800px', float: 'right', left: '75px', position: 'relative'}}>
+                        Loser
+                        <MyTable/>
+                    </div>
+                    <div style={{
                         border: 'solid black 1px',
-                        background: '#ffffff'
-                    }} onClick={this.onClick}
-                    />
+                        height: '800px',
+                        width: '800px',
+                        left: '40px',
+                        float: 'right',
+                        position: 'relative'
+                    }}>
+                        <canvas id={'myCanvas'} style={{
+                            border: 'solid black 1px',
+                            background: '#ffffff'
+                        }} onClick={this.onClick}
+                        />
+                    </div>
+                    <MyModal ref={'myModal'}/>
                 </div>
             </div>
         )
