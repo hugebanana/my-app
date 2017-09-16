@@ -2,7 +2,7 @@ import React from 'react';
 import {Table} from 'antd';
 import reqwest from 'reqwest';
 
-class MyTable extends React.Component {
+class MyTableLo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {data: this.props.dataSource};
@@ -19,7 +19,7 @@ class MyTable extends React.Component {
 
     fetch = () => {
         reqwest({
-            url: 'http://localhost:8081/chess/findAllComments?flag=true',
+            url: 'http://localhost:8081/chess/findAllComments?flag=false',
             method: 'get',
             type: 'json',
         }).then((data) => {
@@ -50,4 +50,4 @@ class MyTable extends React.Component {
     }
 }
 
-export default MyTable;
+export default MyTableLo;

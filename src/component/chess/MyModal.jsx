@@ -8,11 +8,16 @@ class MyModal extends React.Component {
         super(props);
         this.comment = {
             name: '',
-            word: ''
+            word: '',
+            winFlag:false
         }
     }
 
-    changeData=(name,type)=>{
+    winFlag = () => {
+        this.comment.winFlag = true;
+    }
+
+    changeData = (name, type) => {
         this.comment[type] = name;
     }
 
@@ -28,7 +33,7 @@ class MyModal extends React.Component {
     }
     handleOk = () => {
         // console.log(this.comment);
-        fetch('http://localhost:8081/chess/comment',{
+        fetch('http://localhost:8081/chess/comment', {
             method: 'post',
             headers: {
                 'Accept': 'application/json',
@@ -60,7 +65,7 @@ class MyModal extends React.Component {
         const {visible, confirmLoading, ModalText} = this.state;
         return (
             <div>
-                <Modal title="Title"
+                <Modal title="请留下您宝贵的评论！！！"
                        visible={visible}
                        onOk={this.handleOk}
                        confirmLoading={confirmLoading}
@@ -69,7 +74,7 @@ class MyModal extends React.Component {
                     <p>Name</p>
                     <MyInput onChange={this.changeData} iName={'name'}/>
                     <p>Message</p>
-                    <MyInput onChange={this.changeData} iName = {'word'}/>
+                    <MyInput onChange={this.changeData} iName={'word'}/>
                 </Modal>
             </div>
         );

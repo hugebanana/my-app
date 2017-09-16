@@ -1,6 +1,7 @@
 import React from 'react';
 import MyTable from './MyTable';
 import MyModal from './MyModal';
+import MyTableLo from './MyTableLo';
 import {notification, Icon} from 'antd';
 
 class Main extends React.Component {
@@ -16,6 +17,9 @@ class Main extends React.Component {
         this.playerWinCount = [];
         this.comWinCount = [];
         this.turn = true;
+    }
+
+    componentWillMount(){
     }
 
     changeState = () => {
@@ -43,6 +47,7 @@ class Main extends React.Component {
                                 this.desk[i][j] = 1;
                             }
                         }
+                        this.refs.myModal.winFlag();
                         this.refs.myModal.showModal(this.changeState);
                         return;
                     }
@@ -57,7 +62,7 @@ class Main extends React.Component {
                     if (this.comWinCount[i] === 5) {
                         this.openNotification({
                             message: 'loser loser ! chiken dinner!',
-                            icon: <Icon type="smile-circle" style={{color: '#108ee9'}}/>,
+                            icon: <Icon type="frown" style={{color: '#108ee9'}}/>,
                         });
                         this.state.time++;
                         for (let i = 0; i < 19; i++) {
@@ -77,6 +82,8 @@ class Main extends React.Component {
 
     componentWillUpdate(nextProps, nextState) {
         console.log('renew')
+        this.refs.myTable.onChange();
+        this.refs.myTableLo.onChange();
         this.componentDidMount();
         console.log(this.desk)
     }
@@ -84,7 +91,6 @@ class Main extends React.Component {
     openNotification = (obj) => {
         notification.open(obj);
     };
-
     //675 135
     componentDidMount() {
         this.turn = true;
@@ -181,7 +187,6 @@ class Main extends React.Component {
             this.turn = true;
         }
     }
-
 
     alphaDog(x, y) {
         let index = 0;
@@ -298,7 +303,6 @@ class Main extends React.Component {
         }
 
     }
-
     //下棋子
     putChesspiece = (x, y, color) => {
         console.log(x, y);
@@ -341,12 +345,12 @@ class Main extends React.Component {
                 <div style={{padding: '0 24px', minHeight: 870}}>
                     <div style={{width: '350px', height: '800px', float: 'left',}}>
                         Winner
-                        <MyTable/>
+                        <MyTable ref={"myTable"}/>
                     </div>
 
                     <div style={{width: '350px', height: '800px', float: 'right', left: '75px', position: 'relative'}}>
                         Loser
-                        <MyTable/>
+                        <MyTableLo ref={"myTableLo"}/>
                     </div>
                     <div style={{
                         border: 'solid black 1px',
